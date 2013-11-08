@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-PerfPlot::Application.config.secret_key_base = '279d748835801017c496579a9bee6e8d34d7bfe771f5ca0110e2805f5554c340f9315695b085b9570d08845f1cf190e127c0b81e1a4ad128363a6de718657b55'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+PerfPlot::Application.config.secret_key_base = secure_token
